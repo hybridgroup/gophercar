@@ -4,4 +4,4 @@ Like Donkeycar ([http://www.donkeycar.com/](http://www.donkeycar.com/)), but wri
 
 ## How it will work
 
-[Arch](https://raw.githubusercontent.com/hybridgroup/gophercar/master/images/arch.png)
+![Arch](https://github.com/hybridgroup/gophercar/blob/master/images/arch.png?raw=true)
