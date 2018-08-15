@@ -7,7 +7,6 @@ import (
 
 	"github.com/fogleman/gg"
 	"gobot.io/x/gobot"
-	"gobot.io/x/gobot/drivers/gpio"
 	"gobot.io/x/gobot/drivers/i2c"
 	"gobot.io/x/gobot/platforms/raspi"
 )
@@ -21,14 +20,18 @@ var (
 	ctx *gg.Context
 )
 
+var (
+	steering          = 0.0
+	steeringDirection = "right"
+	throttle          = 0.0
+	throttleDirection = "up"
+)
+
 func main() {
 	r = raspi.NewAdaptor()
 	pca9685 = i2c.NewPCA9685Driver(r)
 	oled = i2c.NewSSD1306Driver(r)
 	mpu6050 = i2c.NewMPU6050Driver(r)
-
-	// just here as placeholder for the real steering or throttle
-	servo := gpio.NewServoDriver(pca9685, "1")
 
 	ctx = gg.NewContext(oled.Buffer.Width, oled.Buffer.Height)
 
@@ -42,25 +45,32 @@ func main() {
 		})
 
 		pca9685.SetPWMFreq(60)
-		i := 10
-		direction := 1
 
 		gobot.Every(1*time.Second, func() {
-			fmt.Println("Turning", i)
-			servo.Move(uint8(i))
-			if i > 150 {
-				direction = -1
+			if steering >= 1 && steeringDirection == "right" {
+				steeringDirection = "left"
 			}
-			if i < 10 {
-				direction = 1
+			if steering <= -1 && steeringDirection == "left" {
+				steeringDirection = "right"
 			}
-			i += 10 * direction
+
+			if steeringDirection == "right" {
+				steering += 0.1
+			}
+			if steeringDirection == "left" {
+				steering -= 0.1
+			}
+
+			steeringVal := getSteeringPulse(steering)
+
+			fmt.Println("Steering: ", steeringVal)
+			pca9685.SetPWM(1, 0, uint16(steeringVal))
 		})
 	}
 
 	robot := gobot.NewRobot("gophercar",
 		[]gobot.Connection{r},
-		[]gobot.Device{pca9685, oled, mpu6050, servo},
+		[]gobot.Device{pca9685, oled, mpu6050},
 		work,
 	)
 
@@ -81,4 +91,10 @@ func handleAccel() {
 	fmt.Println("Accelerometer", mpu6050.Accelerometer)
 	fmt.Println("Gyroscope", mpu6050.Gyroscope)
 	fmt.Println("Temperature", mpu6050.Temperature)
+}
+
+// adjusts the steering from -1.0 (hard left) <-> 1.0 (hardright) to the correct
+// pwm pulse values.
+func getSteeringPulse(val float64) float64 {
+	return gobot.ToScale(gobot.FromScale(steering, -1, 1), 290, 490)
 }
