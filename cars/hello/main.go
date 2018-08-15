@@ -2,7 +2,7 @@
 package main
 
 import (
-	"fmt"
+	"math"
 	"time"
 
 	"github.com/fogleman/gg"
@@ -25,6 +25,8 @@ var (
 	steeringDirection = "right"
 	throttle          = 0.0
 	throttleDirection = "up"
+
+	throttleZero = 350
 )
 
 func main() {
@@ -44,27 +46,15 @@ func main() {
 			handleAccel()
 		})
 
+		// init the PWM controller
 		pca9685.SetPWMFreq(60)
 
+		// init the ESC controller for throttle zero
+		pca9685.SetPWM(0, 0, uint16(throttleZero))
+
 		gobot.Every(1*time.Second, func() {
-			if steering >= 1 && steeringDirection == "right" {
-				steeringDirection = "left"
-			}
-			if steering <= -1 && steeringDirection == "left" {
-				steeringDirection = "right"
-			}
-
-			if steeringDirection == "right" {
-				steering += 0.1
-			}
-			if steeringDirection == "left" {
-				steering -= 0.1
-			}
-
-			steeringVal := getSteeringPulse(steering)
-
-			fmt.Println("Steering: ", steeringVal)
-			pca9685.SetPWM(1, 0, uint16(steeringVal))
+			handleSteering()
+			handleThrottle()
 		})
 	}
 
@@ -88,13 +78,68 @@ func handleOLED() {
 func handleAccel() {
 	mpu6050.GetData()
 
-	fmt.Println("Accelerometer", mpu6050.Accelerometer)
-	fmt.Println("Gyroscope", mpu6050.Gyroscope)
-	fmt.Println("Temperature", mpu6050.Temperature)
+	// fmt.Println("Accelerometer", mpu6050.Accelerometer)
+	// fmt.Println("Gyroscope", mpu6050.Gyroscope)
+	// fmt.Println("Temperature", mpu6050.Temperature)
+}
+
+func handleSteering() {
+	if steering >= 1 && steeringDirection == "right" {
+		steeringDirection = "left"
+	}
+	if steering <= -1 && steeringDirection == "left" {
+		steeringDirection = "right"
+	}
+
+	if steeringDirection == "right" {
+		steering += 0.1
+	}
+	if steeringDirection == "left" {
+		steering -= 0.1
+	}
+
+	steeringVal := getSteeringPulse(steering)
+	pca9685.SetPWM(1, 0, uint16(steeringVal))
+}
+
+func handleThrottle() {
+	if round(throttle, 0.05) >= 1 && throttleDirection == "up" {
+		throttleDirection = "down"
+	}
+	if round(throttle, 0.05) <= -1 && throttleDirection == "down" {
+		throttleDirection = "up"
+	}
+
+	if throttleDirection == "up" {
+		throttle += 0.1
+	}
+	if throttleDirection == "down" {
+		throttle -= 0.1
+	}
+
+	throttleVal := getThrottlePulse(throttle)
+	pca9685.SetPWM(0, 0, uint16(throttleVal))
 }
 
 // adjusts the steering from -1.0 (hard left) <-> 1.0 (hardright) to the correct
 // pwm pulse values.
 func getSteeringPulse(val float64) float64 {
-	return gobot.ToScale(gobot.FromScale(steering, -1, 1), 290, 490)
+	return gobot.ToScale(gobot.FromScale(val, -1, 1), 290, 490)
+}
+
+// adjusts the throttle from -1.0 (hard back) <-> 1.0 (hard forward) to the correct
+// pwm pulse values.
+func getThrottlePulse(val float64) int {
+	if val > 0 {
+		return int(remapRange(val, 0, 1, 350, 300))
+	}
+	return int(remapRange(val, -1, 0, 490, 350))
+}
+
+func remapRange(x, in_min, in_max, out_min, out_max float64) float64 {
+	return (x-in_min)*(out_max-out_min)/(in_max-in_min) + out_min
+}
+
+func round(x, unit float64) float64 {
+	return math.Round(x/unit) * unit
 }
