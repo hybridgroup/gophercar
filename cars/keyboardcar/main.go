@@ -67,18 +67,18 @@ func main() {
 				gobot.After(1*time.Second, func() {
 					setThrottle(0)
 				})
-			case keyboard.ArrowRight:
-				if steering < 1.0 {
-					steering = round(steering+0.1, 0.05)
-				}
-
-				setSteering(steering)
 			case keyboard.ArrowDown:
 				setThrottle(-1 * throttlePower)
 
 				gobot.After(1*time.Second, func() {
 					setThrottle(0)
 				})
+			case keyboard.ArrowRight:
+				if steering < 1.0 {
+					steering = round(steering+0.1, 0.05)
+				}
+
+				setSteering(steering)
 			case keyboard.ArrowLeft:
 				if round(steering, 0.05) > -1.0 {
 					steering = round(steering-0.1, 0.05)
