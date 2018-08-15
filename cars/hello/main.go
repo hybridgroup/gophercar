@@ -124,20 +124,16 @@ func handleThrottle() {
 // adjusts the steering from -1.0 (hard left) <-> 1.0 (hardright) to the correct
 // pwm pulse values.
 func getSteeringPulse(val float64) float64 {
-	return gobot.ToScale(gobot.FromScale(val, -1, 1), 290, 490)
+	return gobot.Rescale(val, -1, 1, 290, 490)
 }
 
 // adjusts the throttle from -1.0 (hard back) <-> 1.0 (hard forward) to the correct
 // pwm pulse values.
 func getThrottlePulse(val float64) int {
 	if val > 0 {
-		return int(remapRange(val, 0, 1, 350, 300))
+		return int(gobot.Rescale(val, 0, 1, 350, 300))
 	}
-	return int(remapRange(val, -1, 0, 490, 350))
-}
-
-func remapRange(x, in_min, in_max, out_min, out_max float64) float64 {
-	return (x-in_min)*(out_max-out_min)/(in_max-in_min) + out_min
+	return int(gobot.Rescale(val, -1, 0, 490, 350))
 }
 
 func round(x, unit float64) float64 {
