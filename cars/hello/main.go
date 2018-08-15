@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/fogleman/gg"
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/drivers/gpio"
 	"gobot.io/x/gobot/drivers/i2c"
@@ -12,12 +13,12 @@ import (
 )
 
 var (
-	r *raspi.Adaptor
+	r       *raspi.Adaptor
 	pca9685 *i2c.PCA9685Driver
-	oled *i2c.SSD1306Driver
+	oled    *i2c.SSD1306Driver
 	mpu6050 *i2c.MPU6050Driver
 
-	stage = false
+	ctx *gg.Context
 )
 
 func main() {
@@ -27,7 +28,9 @@ func main() {
 	mpu6050 = i2c.NewMPU6050Driver(r)
 
 	// just here as placeholder for the real steering or throttle
-	servo := gpio.NewServoDriver(pca9685, "15")
+	servo := gpio.NewServoDriver(pca9685, "1")
+
+	ctx = gg.NewContext(oled.Buffer.Width, oled.Buffer.Height)
 
 	work := func() {
 		gobot.Every(1*time.Second, func() {
@@ -65,16 +68,11 @@ func main() {
 }
 
 func handleOLED() {
-	oled.Clear()
-	if stage {
-		for x := 0; x < oled.Buffer.Width; x += 5 {
-			for y := 0; y < oled.Buffer.Height; y++ {
-				oled.Set(x, y, 1)
-			}
-		}
-	}
-	stage = !stage
-	oled.Display()
+	ctx.SetRGB(0, 0, 0)
+	ctx.Clear()
+	ctx.SetRGB(1, 1, 1)
+	ctx.DrawStringAnchored(time.Now().Format("15:04:05"), 0, 0, 0, 1)
+	oled.ShowImage(ctx.Image())
 }
 
 func handleAccel() {
