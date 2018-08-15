@@ -26,11 +26,17 @@ The following will need to be installed on a bootable SD card for the Raspi:
 - OpenCV 3.4.2
 - Movidius NCS SDK (optional)
 
-## Expected workflow
+## Current workflow
 
-- Install Go 1.10+
-- Install Gobot and GoCV
-- Install the Gophercar package on your development machine. We will need a Docker container to make cross-compiling for Raspian easier (due to OpenCV/GoCV)
+- Edit your car in a sub-directory of the `cars` directory.
+- To transfer your code to the car, compile it on the car, and then run it:
+    ./runner.sh hello 192.168.1.42
+
+This copies the code to the Raspberry Pi, compiles it on the Pi, and then executes it.
+
+## Future workflow
+
+- Install the Gophercar Docker container to cross-compiling for Raspian easier, due to using binary libaries such as OpenCV/GoCV
 - Compile the code to run on your car
 - Copy the compiled executable to your car's controller using scp
 - Execute the car code on the car controller
