@@ -23,8 +23,19 @@ Like Donkeycar ([http://www.donkeycar.com/](http://www.donkeycar.com/)), but wri
 The following will need to be installed on a bootable SD card for the Raspi:
 
 - Raspbian Stretch OS
+- Go v1.10+
 - OpenCV 3.4.2
+- SDL2 v2.0.8+
 - Movidius NCS SDK (optional)
+
+The following OS features must be enabled:
+
+- I2C
+- Camera
+
+You will also need to update the kernel on the Raspbian Pi to v4.14+
+
+    sudo rpi-update
 
 ## Current workflow
 
