@@ -51,6 +51,7 @@ func main() {
 
 	ctx = gg.NewContext(oled.Buffer.Width, oled.Buffer.Height)
 
+
 	work := func() {
 		leftX.Store(float64(0.0))
 		leftY.Store(float64(0.0))
@@ -61,15 +62,18 @@ func main() {
 			handleOLED()
 		})
 
-		gobot.Every(100*time.Millisecond, func() {
+		gobot.Every(120*time.Millisecond, func() {
 			handleAccel()
 		})
 
-		// init the PWM controller
+                // init the PWM controller
 		pca9685.SetPWMFreq(60)
 
 		// init the ESC controller for throttle zero
 		pca9685.SetPWM(0, 0, uint16(throttleZero))
+
+                // sleep
+                time.Sleep(100*time.Millisecond)
 
 		stick.On(joystick.LeftX, func(data interface{}) {
 			val := float64(data.(int16))
@@ -91,8 +95,8 @@ func main() {
 			rightY.Store(val)
 		})
 
-		gobot.Every(10*time.Millisecond, func() {
-			// right stick is steering
+		gobot.Every(120*time.Millisecond, func() {
+		// right stick is steering
 			rightStick := getRightStick()
 
 			switch {
@@ -105,15 +109,15 @@ func main() {
 			}
 		})
 
-		gobot.Every(10*time.Millisecond, func() {
+		gobot.Every(120*time.Millisecond, func() {
 			leftStick := getLeftStick()
 			// left stick is throttle
 
 			switch {
-			case leftStick.y < -10:
+				  case leftStick.y < -10:
 				setThrottle(gobot.Rescale(leftStick.y, -32767.0, 32767.0, -1.0, 1.0))
 			case leftStick.y > 10:
-				setThrottle(gobot.Rescale(leftStick.y, -32767.0, 32767.0, -1.0, 1.0))
+				    setThrottle(gobot.Rescale(leftStick.y, -32767.0, 32767.0, -1.0, 1.0))
 			default:
 				setThrottle(0)
 			}
@@ -160,7 +164,7 @@ func setThrottle(throttle float64) {
 // adjusts the steering from -1.0 (hard left) <-> 1.0 (hardright) to the correct
 // pwm pulse values.
 func getSteeringPulse(val float64) float64 {
-	return gobot.Rescale(val, -1, 1, 290, 490)
+	return gobot.Rescale(val, -1, 1, 500, 300)
 }
 
 // adjusts the throttle from -1.0 (hard back) <-> 1.0 (hard forward) to the correct
