@@ -1,8 +1,8 @@
-![Gophercon 2018](https://github.com/hybridgroup/gophercar/blob/master/images/gophercon2018.gif?raw=true)
-
 # Gophercar
 
-Like Donkeycar ([http://www.donkeycar.com/](http://www.donkeycar.com/)), but written in Go. The idea is to make Gophercar able to run on any of the supported Donkeycar cars/hardware without any modification.
+![Gophercar FPV](https://github.com/hybridgroup/gophercar/blob/master/images/gophercar-fpv.gif?raw=true)
+
+Gophercar is like Donkeycar ([http://www.donkeycar.com/](http://www.donkeycar.com/)), but written in Go. The idea is to make Gophercar able to run on any of the supported Donkeycar cars/hardware without any modification.
 
 ## How it will work
 
@@ -56,3 +56,5 @@ This copies the code to the Raspberry Pi, compiles it on the Pi, and then execut
 ## Cars
 
 The `cars` directory will contain various car controller programs. Choose one to compile and put on your car controller.
+
+![Gophercon 2018](https://github.com/hybridgroup/gophercar/blob/master/images/gophercon2018.gif?raw=true)
