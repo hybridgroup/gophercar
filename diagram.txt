@@ -6,7 +6,6 @@ Main(Gophercar) --> |commands| B(API server)
 Main --> W(Web server)
 Main --> |video stream| C(MJPEG server)
 Main --- AI(Self-driving)
-B -->|socket.io| D(Web page)
-C -->|mjpeg| D
+Main --- J(Joystick)
+C -->|mjpeg| D[Web page]
 W -->|http| D
-D -->|Web Gamepad API| J[Joystick]

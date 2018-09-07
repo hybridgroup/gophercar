@@ -2,9 +2,9 @@
 
 ![Gophercar FPV](https://github.com/hybridgroup/gophercar/blob/master/images/gophercar-fpv.gif?raw=true)
 
-Gophercar is like Donkeycar ([http://www.donkeycar.com/](http://www.donkeycar.com/)), but written in Go. The idea is to make Gophercar able to run on any of the supported Donkeycar cars/hardware without any modification.
+Gophercar is a DIY platform for self-driving miniature cars like Donkeycar ([http://www.donkeycar.com/](http://www.donkeycar.com/)), but is written in the Go programming language. The idea is to make Gophercar able to run on any of the supported Donkeycar cars/hardware without any modification.
 
-## How it will work
+## How it works
 
 ![Arch](https://github.com/hybridgroup/gophercar/blob/master/images/arch.png?raw=true)
 
@@ -20,7 +20,7 @@ Gophercar is like Donkeycar ([http://www.donkeycar.com/](http://www.donkeycar.co
 
 ## Car OS Software
 
-The following will need to be installed on a bootable SD card for the Raspi:
+The following needs to be installed on a bootable SD card for the Raspi:
 
 - Raspbian Stretch OS
 - Go v1.10+
